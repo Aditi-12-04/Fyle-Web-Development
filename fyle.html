@@ -4,59 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GitHub Repositories List</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #070707;
-        }
-
-        h1 {
-            color: #00eeff;
-        }
-
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .repository {
-            border: 1.5px solid #ddd;
-            padding: 10px;
-            margin-top: 10px;
-            margin-bottom: 10px;
-            background-color: #fff;
-            border-radius: 5px;
-        }
-
-        .repository h3 {
-            margin-bottom: 5px;
-            color: #463d97;
-        }
-
-        .topics {
-            font-style: italic;
-            color: #555;
-        }
-
-        .container {
-            margin-top: 30px;
-        }
-
-        .alert {
-            margin-top: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
@@ -91,68 +39,11 @@
         <div id="repositories"></div>
         <div id="loader" class="loader" style="display: none;"></div>
         <div id="alertContainer"></div>
+
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        <script src="script.js"></script>
     </div>
-
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-
-    <script>
-        const repositoriesContainer = $('#repositories');
-        const loader = $('#loader');
-        const alertContainer = $('#alertContainer');
-
-        function getRepositories() {
-            const username = $('#username').val();
-            const perPage = $('#perPage').val();
-            const searchQuery = $('#search').val();
-
-            loader.show();
-            repositoriesContainer.html('');
-            alertContainer.html('');
-
-            fetch(`https://api.github.com/users/${username}/repos?per_page=${perPage}&page=1&q=${searchQuery}`)
-                .then(response => response.json())
-                .then(data => {
-                    loader.hide();
-                    displayRepositories(data);
-                })
-                .catch(error => {
-                    loader.hide();
-                    showAlert('danger', `Error: ${error.message}`);
-                });
-        }
-
-        function displayRepositories(repositories) {
-    if (!Array.isArray(repositories)) {
-        showAlert('danger', 'Invalid data received from the server.');
-        return;
-    }
-
-    if (repositories.length === 0) {
-        showAlert('info', 'No repositories found.');
-        return;
-    }
-
-    repositories.forEach(repo => {
-        const repoElement = $('<div>').addClass('repository');
-        repoElement.html(`<h3>${repo.name}</h3><p>${repo.description || 'No description'}</p>`);
-        
-        if (repo.topics && Array.isArray(repo.topics) && repo.topics.length > 0) {
-            const topicsElement = $('<p>').addClass('topics');
-            topicsElement.text(`Topics: ${repo.topics.join(', ')}`);
-            repoElement.append(topicsElement);
-        }
-
-        repositoriesContainer.append(repoElement);
-    });
-}
-
-        function showAlert(type, message) {
-            const alert = $('<div>').addClass(`alert alert-${type}`);
-            alert.text(message);
-            alertContainer.html(alert);
-        }
-    </script>
 </body>
 </html>
